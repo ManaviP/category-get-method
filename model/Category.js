@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/config'); 
+const sequelize = require('../config/config');
 
 const Category = sequelize.define('Category', {
   category_id: {
@@ -13,7 +13,11 @@ const Category = sequelize.define('Category', {
   },
   parent_category_id: {
     type: DataTypes.INTEGER,
-    allowNull: true, 
+    allowNull: true,
+    references: {
+      model: 'Categories',
+      key: 'category_id',
+    },
   },
   is_main_category: {
     type: DataTypes.BOOLEAN,
@@ -21,4 +25,8 @@ const Category = sequelize.define('Category', {
   },
 });
 
+Category.hasMany(Category, { foreignKey: 'parent_category_id', as: 'subcategories' });
+Category.belongsTo(Category, { foreignKey: 'parent_category_id', as: 'parentCategory' });
+
 module.exports = Category;
+

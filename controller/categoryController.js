@@ -1,5 +1,6 @@
 const Category = require('../model/category');
 const Course = require('../model/Course');
+const Skill = require('../model/Skill'); 
 
 const getParentCategories = async (req, res) => {
   try {
@@ -35,9 +36,24 @@ const getCoursesBySubCategory = async (req, res) => {
       where: {
         category_id: subCategoryId,
       },
+      include: [
+        {
+          model: Category,
+          as: 'Category',
+          attributes: ['category_id', 'category_name'],
+        },
+        {
+          model: Skill,
+          through: { attributes: [] },
+          attributes: ['skill_id', 'skill_name'],
+        },
+      ],
+      attributes: ['course_id', 'course_name', 'course_description', 'course_price'],
     });
+
     res.json(courses);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 };
@@ -45,5 +61,5 @@ const getCoursesBySubCategory = async (req, res) => {
 module.exports = {
   getParentCategories,
   getSubCategories,
-  getCoursesBySubCategory
+  getCoursesBySubCategory,
 };
