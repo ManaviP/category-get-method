@@ -5,7 +5,7 @@ require('./model/Course');
 require('./model/CourseUser');
 require('./model/Skill');
 require('./model/CourseSkill');
-
+const userController = require('./controller/userController');
 const categoryController = require('./controller/categoryController');
 const courseController = require('./controller/courseController');
 
@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
-
+app.get('/users/:id', userController.getUserWithCoursesAndSkills);
 app.get('/categories', categoryController.getParentCategories);
 app.get('/categories/:id/subcategories', categoryController.getSubCategories);
 app.get('/categories/:id/courses', categoryController.getCoursesBySubCategory);
