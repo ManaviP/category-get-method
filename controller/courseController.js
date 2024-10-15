@@ -62,8 +62,11 @@ const searchCoursesOrSkills = async (req, res) => {
         const allCourses = [...new Set([...coursesByName, ...coursesBySkill])];
         const searchCount = allCourses.length;
 
-        if (searchCount.length === 0) {
-            return res.status(200).json({ message: 'No courses found' });
+        if (searchCount === 0) {
+            return res.status(200).json({
+                message: 'No courses found',
+                searchCount: 0,
+            });
         }
 
         return res.status(200).json({ searchCount, courses: allCourses });
