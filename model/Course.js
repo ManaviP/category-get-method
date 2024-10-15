@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Category = require('./category');
+const Category = require('./category'); 
 
 const Course = sequelize.define('Course', {
   course_id: {
@@ -20,6 +20,22 @@ const Course = sequelize.define('Course', {
     type: DataTypes.FLOAT,
     allowNull: true,
   },
+  course_mrp: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  course_level: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  review: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  duration: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   category_id: {
     type: DataTypes.INTEGER,
     references: {
@@ -28,7 +44,5 @@ const Course = sequelize.define('Course', {
     },
   },
 });
-
 Course.belongsTo(Category, { foreignKey: 'category_id', as: 'Category' });
-
 module.exports = Course;

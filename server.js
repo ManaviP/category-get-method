@@ -1,7 +1,8 @@
 const express = require('express');
 const sequelize = require('./config/config');
-
+require('./model/User');
 require('./model/Course');
+require('./model/CourseUser');
 require('./model/Skill');
 require('./model/CourseSkill');
 

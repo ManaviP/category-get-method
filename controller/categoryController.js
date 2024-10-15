@@ -1,6 +1,7 @@
 const Category = require('../model/category');
 const Course = require('../model/Course');
 const Skill = require('../model/Skill'); 
+const User = require('../model/User');
 
 const getParentCategories = async (req, res) => {
   try {
@@ -47,8 +48,22 @@ const getCoursesBySubCategory = async (req, res) => {
           through: { attributes: [] },
           attributes: ['skill_id', 'skill_name'],
         },
+        {
+          model: User, 
+          through: { attributes: [] },
+          attributes: ['user_id', 'name'],
+        },
       ],
-      attributes: ['course_id', 'course_name', 'course_description', 'course_price'],
+      attributes: [
+        'course_id',
+        'course_name',
+        'course_description',
+        'course_price',
+        'course_mrp', 
+        'course_level',
+        'review',
+        'duration',
+      ],
     });
 
     res.json(courses);
