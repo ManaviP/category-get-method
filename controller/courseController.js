@@ -1,7 +1,10 @@
 const { Op } = require('sequelize');
+const Category = require('../model/category');
 const Course = require('../model/Course');
 const Skill = require('../model/Skill');
 const User = require('../model/User');
+const CourseSkill = require('../model/CourseSkill');
+const CourseUser = require('../model/CourseUser');
 
 const searchCoursesOrSkills = async (req, res) => {
     const query = req.query.query;
@@ -24,10 +27,10 @@ const searchCoursesOrSkills = async (req, res) => {
                     attributes: ['skill_id', 'skill_name'],
                 },
                 {
-                    model: User, 
+                    model: User,
                     through: { attributes: [] },
                     attributes: ['user_id', 'name'],
-                  },
+                },
             ],
         });
 
@@ -41,7 +44,7 @@ const searchCoursesOrSkills = async (req, res) => {
                 {
                     model: Course,
                     through: { attributes: [] },
-                    attributes: ['course_id', 'course_name', 'course_description', 'course_price','course_mrp', 'course_level','review','duration'],
+                    attributes: ['course_id', 'course_name', 'course_description', 'course_price', 'course_mrp', 'course_level', 'review', 'duration'],
                     include: [
                         {
                             model: Skill,
@@ -49,10 +52,10 @@ const searchCoursesOrSkills = async (req, res) => {
                             attributes: ['skill_id', 'skill_name'],
                         },
                         {
-                            model: User, 
+                            model: User,
                             through: { attributes: [] },
                             attributes: ['user_id', 'name'],
-                          },
+                        },
                     ],
                 },
             ],
@@ -76,6 +79,164 @@ const searchCoursesOrSkills = async (req, res) => {
     }
 };
 
+const updateCourse = async (req, res) => {
+    const courseId = req.params.id;
+    const { course_name, course_description, course_mrp, course_price, course_level, duration, skills } = req.body;
+
+    try {
+        const course = await Course.findByPk(courseId);
+
+        if (!course) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        course.course_name = course_name || course.course_name;
+        course.course_description = course_description || course.course_description;
+        course.course_mrp = course_mrp || course.course_mrp;
+        course.course_price = course_price || course.course_price;
+        course.course_level = course_level || course.course_level;
+        course.duration = duration || course.duration;
+
+        await course.save();
+
+        if (skills && skills.length > 0) {
+            await CourseSkill.destroy({ where: { course_id: courseId } });
+            const skillRecords = skills.map(skill_id => ({ course_id: courseId, skill_id }));
+            await CourseSkill.bulkCreate(skillRecords);
+        }
+
+        res.json(course);
+    } catch (err) {
+        console.error('Error updating course:', err);
+        res.status(500).json({ error: 'Failed to update course', details: err.message });
+    }
+};
+
+const deleteCourse = async (req, res) => {
+    const courseId = req.params.id;
+
+    try {
+        const course = await Course.findByPk(courseId);
+
+        if (!course) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        await CourseSkill.destroy({ where: { course_id: courseId } });
+        await course.destroy();
+
+        res.json({ message: 'Course deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting course:', err);
+        res.status(500).json({ error: 'Failed to delete course' });
+    }
+};
+
+const getCourseById = async (req, res) => {
+    const courseId = req.params.id;
+
+    try {
+        const course = await Course.findOne({
+            where: { course_id: courseId },
+            include: [
+                {
+                    model: Category,
+                    as: 'Category',
+                    attributes: ['category_name'],
+                    include: [
+                        {
+                            model: Category,
+                            as: 'parentCategory',
+                            attributes: ['category_name'],
+                        },
+                    ],
+                },
+                {
+                    model: Skill,
+                    through: { attributes: [] },
+                    attributes: ['skill_id', 'skill_name'],
+                },
+                {
+                    model: User,
+                    through: { attributes: [] },
+                    attributes: ['user_id', 'name'],
+                },
+            ],
+            attributes: [
+                'course_id',
+                'course_name',
+                'course_description',
+                'course_price',
+                'course_mrp',
+                'course_level',
+                'review',
+                'duration',
+            ],
+        });
+
+        if (!course) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        res.json(course);
+    } catch (err) {
+        console.error('Error fetching course details:', err);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+
+const createCourse = async (req, res) => {
+    const {
+        course_name,
+        course_description,
+        course_mrp,
+        course_price,
+        course_level,
+        duration,
+        review,
+        category_id,
+        skills,
+        user_id
+    } = req.body;
+
+    try {
+        const newCourse = await Course.create({
+            course_name,
+            course_description,
+            course_mrp,
+            course_price,
+            course_level,
+            duration,
+            review,
+            category_id
+        });
+
+        if (skills && skills.length > 0) {
+            const skillRecords = skills.map(skill_id => ({
+                course_id: newCourse.course_id,
+                skill_id,
+            }));
+            await CourseSkill.bulkCreate(skillRecords);
+        }
+
+        if (user_id) {
+            await CourseUser.create({
+                course_id: newCourse.course_id,
+                user_id,
+            });
+        }
+
+        res.status(201).json(newCourse);
+    } catch (err) {
+        console.error('Error creating course:', err);
+        res.status(500).json({ error: 'Failed to create course', details: err.message });
+    }
+};
+
 module.exports = {
     searchCoursesOrSkills,
+    getCourseById,
+    createCourse,
+    updateCourse,
+    deleteCourse,
 };

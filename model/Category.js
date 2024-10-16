@@ -25,8 +25,12 @@ const Category = sequelize.define('Category', {
   },
 });
 
-Category.hasMany(Category, { foreignKey: 'parent_category_id', as: 'subcategories' });
+Category.hasMany(Category, { foreignKey: 'parent_category_id', as: 'subcategories',onDelete: 'CASCADE',});
+
 Category.belongsTo(Category, { foreignKey: 'parent_category_id', as: 'parentCategory' });
 
-module.exports = Category;
+sequelize.sync()
+  .then(() => console.log('Category model synced with database'))
+  .catch(err => console.error('Error syncing Category model:', err));
 
+module.exports = Category;
