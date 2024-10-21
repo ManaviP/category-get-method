@@ -34,11 +34,17 @@ const createCategory = async (req, res) => {
   const { category_name, parent_category_id } = req.body;
   
   try {
-    const newCategory = await Category.create({
+    if (parent_category_id) {
+      const parentCategory = await Category.findByPk(parent_category_id);
+      if (!parentCategory) {
+        return res.status(400).json({ error: 'Parent category does not exist' });
+      }
+    }
+      const newCategory = await Category.create({
       category_name,
-      parent_category_id: parent_category_id || null, 
+      parent_category_id: parent_category_id || null,
     });
-    
+
     res.status(201).json(newCategory);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create category' });
@@ -55,6 +61,12 @@ const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
+    if (parent_category_id) {
+      const parentCategory = await Category.findByPk(parent_category_id);
+      if (!parentCategory) {
+        return res.status(400).json({ error: 'Parent category does not exist' });
+      }
+    }
     
     category.category_name = category_name || category.category_name;
     category.parent_category_id = parent_category_id || category.parent_category_id;
@@ -67,30 +79,6 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const deleteCategory = async (req, res) => {
-  const categoryId = req.params.id;
-
-  try {
-    const category = await Category.findByPk(categoryId);
-
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
-    }
-
-    await Course.destroy({
-      where: {
-        category_id: categoryId,
-      },
-    });
-
-    await category.destroy();
-
-    res.json({ message: 'Category and its associated courses deleted successfully' });
-  } catch (err) {
-    console.error('Error deleting category:', err);
-    res.status(500).json({ error: 'Failed to delete category' });
-  }
-};
 
 const getCoursesBySubCategory = async (req, res) => {
   const subCategoryId = req.params.id;
@@ -141,5 +129,4 @@ module.exports = {
   getCoursesBySubCategory,
   createCategory,   
   updateCategory,  
-  deleteCategory,   
 };

@@ -16,7 +16,6 @@ app.use(express.json());
 
 app.post('/categories', categoryController.createCategory);
 app.put('/categories/:id', categoryController.updateCategory);
-app.delete('/categories/:id', categoryController.deleteCategory);
 app.post('/courses', courseController.createCourse);  
 app.put('/courses/:id', courseController.updateCourse);
 app.delete('/courses/:id', courseController.deleteCourse);
