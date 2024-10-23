@@ -5,6 +5,11 @@ const Skill = require('../model/Skill');
 const CourseSkill = require('../model/CourseSkill');
 const User = require('../model/User');
 const CourseUser = require('../model/CourseUser');
+const Module = require('../model/Module');
+const Lecture = require('../model/Lecture');
+const CourseModule = require('../model/CourseModule');
+const ModuleLecture = require('../model/ModuleLecture');
+
 async function seeder() {
   try {
     await sequelize.sync({ force: true });
@@ -29,30 +34,71 @@ async function seeder() {
     const fullstackCourse = await Course.create({
       course_name: 'Full-Stack Web Development',
       course_description: 'Learn how to build web applications from scratch',
-      course_price: 15000, course_mrp:20000, course_level: 'begineer',review:4,duration: 100,
+      course_price: 15000,
+      course_mrp: 20000,
+      course_level: 'beginner',
+      review: 4,
+      duration: 100,
       category_id: webDevelopment.category_id,
     });
 
     const frontendCourse = await Course.create({
       course_name: 'Frontend Development',
       course_description: 'Learn how to build user interfaces using modern technologies',
-      course_price: 15000, course_mrp:20000, course_level: 'begineer',review:4,duration: 100,
+      course_price: 15000,
+      course_mrp: 20000,
+      course_level: 'beginner',
+      review: 4,
+      duration: 100,
       category_id: webDevelopment.category_id,
     });
 
     const mobileFullstackCourse = await Course.create({
       course_name: 'Mobile Full-Stack Development',
       course_description: 'Build mobile applications using full-stack technologies',
-      course_price: 15000, course_mrp:20000, course_level: 'begineer',review:4,duration: 100,
+      course_price: 15000,
+      course_mrp: 20000,
+      course_level: 'beginner',
+      review: 4,
+      duration: 100,
       category_id: mobileDevelopment.category_id,
     });
 
     const mobileFrontendCourse = await Course.create({
       course_name: 'Mobile Frontend Development',
       course_description: 'Develop engaging mobile interfaces',
-      course_price: 15000, course_mrp:20000, course_level: 'begineer',review:4,duration: 100,
+      course_price: 15000,
+      course_mrp: 20000,
+      course_level: 'beginner',
+      review: 4,
+      duration: 100,
       category_id: mobileDevelopment.category_id,
     });
+
+    const module1 = await Module.create({
+      module_name: 'Introduction to Full-Stack Development',
+      course_id: fullstackCourse.course_id,
+    });
+
+    const module2 = await Module.create({
+      module_name: 'Frontend Basics',
+      course_id: frontendCourse.course_id,
+    });
+
+    const module3 = await Module.create({
+      module_name: 'Mobile App Development Basics',
+      course_id: mobileFullstackCourse.course_id,
+    });
+
+    const module4 = await Module.create({
+      module_name: 'Advanced Mobile Frontend Techniques',
+      course_id: mobileFrontendCourse.course_id,
+    });
+
+    await CourseModule.create({ course_id: fullstackCourse.course_id, module_id: module1.module_id });
+    await CourseModule.create({ course_id: frontendCourse.course_id, module_id: module2.module_id });
+    await CourseModule.create({ course_id: mobileFullstackCourse.course_id, module_id: module3.module_id });
+    await CourseModule.create({ course_id: mobileFrontendCourse.course_id, module_id: module4.module_id });
 
     const skillHTML = await Skill.create({
       skill_name: 'HTML',
@@ -110,6 +156,40 @@ async function seeder() {
     await CourseSkill.create({ course_id: mobileFrontendCourse.course_id, skill_id: skillReact.skill_id });
     await CourseSkill.create({ course_id: mobileFrontendCourse.course_id, skill_id: skillAndroidStudio.skill_id });
     await CourseUser.create({ course_id: mobileFrontendCourse.course_id, user_id: user2.user_id });
+
+    const lecture1 = await Lecture.create({
+      title: 'Getting Started with HTML',
+      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
+      module_id: module1.module_id,
+      is_preview: true,
+    });
+
+    const lecture2 = await Lecture.create({
+      title: 'CSS Fundamentals',
+      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
+      module_id: module2.module_id,
+      is_preview: false,
+    });
+
+    const lecture3 = await Lecture.create({
+      title: 'Building Mobile Apps with React Native',
+      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
+      module_id: module3.module_id,
+      is_preview: false,
+    });
+
+    const lecture4 = await Lecture.create({
+      title: 'Advanced UI Design Principles',
+      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
+      module_id: module4.module_id,
+      is_preview: true,
+    });
+
+    await ModuleLecture.create({ module_id: module1.module_id, lecture_id: lecture1.lecture_id });
+    await ModuleLecture.create({ module_id: module2.module_id, lecture_id: lecture2.lecture_id });
+    await ModuleLecture.create({ module_id: module3.module_id, lecture_id: lecture3.lecture_id });
+    await ModuleLecture.create({ module_id: module4.module_id, lecture_id: lecture4.lecture_id });
+
     console.log('Data successfully seeded!');
     process.exit();
   } catch (error) {

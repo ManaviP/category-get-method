@@ -3,8 +3,10 @@ const Category = require('../model/category');
 const Course = require('../model/Course');
 const Skill = require('../model/Skill');
 const User = require('../model/User');
+const Module = require('../model/Module');
 const CourseSkill = require('../model/CourseSkill');
 const CourseUser = require('../model/CourseUser');
+const CourseModule = require('../model/CourseModule');
 
 const searchCoursesOrSkills = async (req, res) => {
     const query = req.query.query;
@@ -81,7 +83,7 @@ const searchCoursesOrSkills = async (req, res) => {
 
 const updateCourse = async (req, res) => {
     const courseId = req.params.id;
-    const { course_name, course_description, course_mrp, course_price, course_level, duration, skills } = req.body;
+    const { course_name, course_description, course_mrp, course_price, course_level, duration, skills, modules } = req.body;
 
     try {
         const course = await Course.findByPk(courseId);
@@ -105,6 +107,12 @@ const updateCourse = async (req, res) => {
             await CourseSkill.bulkCreate(skillRecords);
         }
 
+        if (modules && modules.length > 0) {
+            await CourseModule.destroy({ where: { course_id: courseId } }); 
+            const moduleRecords = modules.map(module => ({ module_name: module.name, course_id: courseId }));
+            await CourseModule.bulkCreate(moduleRecords); 
+        }
+
         res.json(course);
     } catch (err) {
         console.error('Error updating course:', err);
@@ -123,6 +131,7 @@ const deleteCourse = async (req, res) => {
         }
 
         await CourseSkill.destroy({ where: { course_id: courseId } });
+        await CourseModule.destroy({ where: { course_id: courseId } }); 
         await course.destroy();
 
         res.json({ message: 'Course deleted successfully' });
@@ -161,6 +170,11 @@ const getCourseById = async (req, res) => {
                     through: { attributes: [] },
                     attributes: ['user_id', 'name'],
                 },
+                {
+                    model: Module, 
+                    through: { attributes: [] },
+                    attributes: ['module_id', 'module_name'],
+                }
             ],
             attributes: [
                 'course_id',
@@ -196,7 +210,8 @@ const createCourse = async (req, res) => {
         review,
         category_id,
         skills,
-        user_id
+        user_id,
+        modules 
     } = req.body;
 
     try {
@@ -224,6 +239,14 @@ const createCourse = async (req, res) => {
                 course_id: newCourse.course_id,
                 user_id,
             });
+        }
+
+        if (modules && modules.length > 0) {
+            const moduleRecords = modules.map(module => ({
+                module_name: module.name,
+                course_id: newCourse.course_id
+            }));
+            await CourseModule.bulkCreate(moduleRecords); 
         }
 
         res.status(201).json(newCourse);

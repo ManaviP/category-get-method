@@ -5,10 +5,12 @@ require('./model/Course');
 require('./model/CourseUser');
 require('./model/Skill');
 require('./model/CourseSkill');
+require('./model/Module');
+require('./model/CourseModule');
 const userController = require('./controller/userController');
 const categoryController = require('./controller/categoryController');
 const courseController = require('./controller/courseController');
-
+const moduleController = require('./controller/moduleController');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -25,7 +27,7 @@ app.get('/categories', categoryController.getParentCategories);
 app.get('/categories/:id/subcategories', categoryController.getSubCategories);
 app.get('/categories/:id/courses', categoryController.getCoursesBySubCategory);
 app.get('/api/search', courseController.searchCoursesOrSkills);
-
+app.get('/modules/:id', moduleController.getModuleById);
 const startServer = async () => {
     try {
         await sequelize.sync({ logging: console.log });
