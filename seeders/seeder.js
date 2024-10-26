@@ -2,17 +2,17 @@ const sequelize = require('../config/config');
 const Category = require('../model/category');
 const Course = require('../model/Course');
 const Skill = require('../model/Skill');
-const CourseSkill = require('../model/CourseSkill');
-const User = require('../model/User');
-const CourseUser = require('../model/CourseUser');
 const Module = require('../model/Module');
 const Lecture = require('../model/Lecture');
+const User = require('../model/User');
+const CourseSkill = require('../model/CourseSkill');
+const CourseUser = require('../model/CourseUser');
 const CourseModule = require('../model/CourseModule');
 const ModuleLecture = require('../model/ModuleLecture');
 
 async function seeder() {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: true, alter: true });
 
     const computerScience = await Category.create({
       category_name: 'Computer Science',
@@ -64,78 +64,21 @@ async function seeder() {
       category_id: mobileDevelopment.category_id,
     });
 
-    const mobileFrontendCourse = await Course.create({
-      course_name: 'Mobile Frontend Development',
-      course_description: 'Develop engaging mobile interfaces',
-      course_price: 15000,
-      course_mrp: 20000,
-      course_level: 'beginner',
-      review: 4,
-      duration: 100,
-      category_id: mobileDevelopment.category_id,
-    });
+    const skillHTML = await Skill.create({ skill_name: 'HTML', skill_value: 5 });
+    const skillCSS = await Skill.create({ skill_name: 'CSS', skill_value: 4 });
+    const skillReact = await Skill.create({ skill_name: 'React', skill_value: 5 });
+    const skillNode = await Skill.create({ skill_name: 'Node.js', skill_value: 5 });
+    const skillAndroidStudio = await Skill.create({ skill_name: 'Android Studio', skill_value: 4 });
 
-    const module1 = await Module.create({
-      module_name: 'Introduction to Full-Stack Development',
-      course_id: fullstackCourse.course_id,
-    });
+    const user1 = await User.create({ name: 'Arav', email: 'a@gmail.com', password: '123456', role: 'instructor' });
+    const user2 = await User.create({ name: 'Arathi', email: 'b@gmail.com', password: '12345', role: 'instructor' });
 
-    const module2 = await Module.create({
-      module_name: 'Frontend Basics',
-      course_id: frontendCourse.course_id,
-    });
-
-    const module3 = await Module.create({
-      module_name: 'Mobile App Development Basics',
-      course_id: mobileFullstackCourse.course_id,
-    });
-
-    const module4 = await Module.create({
-      module_name: 'Advanced Mobile Frontend Techniques',
-      course_id: mobileFrontendCourse.course_id,
-    });
-
-    await CourseModule.create({ course_id: fullstackCourse.course_id, module_id: module1.module_id });
-    await CourseModule.create({ course_id: frontendCourse.course_id, module_id: module2.module_id });
-    await CourseModule.create({ course_id: mobileFullstackCourse.course_id, module_id: module3.module_id });
-    await CourseModule.create({ course_id: mobileFrontendCourse.course_id, module_id: module4.module_id });
-
-    const skillHTML = await Skill.create({
-      skill_name: 'HTML',
-      skill_value: 5,
-    });
-
-    const skillCSS = await Skill.create({
-      skill_name: 'CSS',
-      skill_value: 4,
-    });
-
-    const skillReact = await Skill.create({
-      skill_name: 'React',
-      skill_value: 5,
-    });
-
-    const skillNode = await Skill.create({
-      skill_name: 'Node.js',
-      skill_value: 5,
-    });
-
-    const skillAndroidStudio = await Skill.create({
-      skill_name: 'Android Studio',
-      skill_value: 4,
-    });
-
-    const user1 = await User.create({
-      name: 'Arav',
-      email: 'a@gmail.com',
-      password: '123456',
-      role: 'instructor',
-    });
-    const user2 = await User.create({
-      name: 'Arathi',
-      email: 'b@gmail.com',
-      password: '12345',
-      role: 'instructor',
+    const module1 = await Module.create({ module_name: 'Mobile Frontend Development', course_id: fullstackCourse.course_id });
+    const lecture1 = await Lecture.create({
+      title: 'Introduction to Mobile Frontend Development',
+      video_url: 'http://example.com/intro-to-js',
+      is_preview: false,
+      module_id: module1.module_id,
     });
 
     await CourseSkill.create({ course_id: fullstackCourse.course_id, skill_id: skillHTML.skill_id });
@@ -143,52 +86,21 @@ async function seeder() {
     await CourseSkill.create({ course_id: fullstackCourse.course_id, skill_id: skillReact.skill_id });
     await CourseSkill.create({ course_id: fullstackCourse.course_id, skill_id: skillNode.skill_id });
     await CourseUser.create({ course_id: fullstackCourse.course_id, user_id: user1.user_id });
+    await CourseModule.create({ course_id: fullstackCourse.course_id, module_id: module1.module_id });
+    await ModuleLecture.create({ module_id: module1.module_id, lecture_id: lecture1.lecture_id });
 
     await CourseSkill.create({ course_id: frontendCourse.course_id, skill_id: skillHTML.skill_id });
     await CourseSkill.create({ course_id: frontendCourse.course_id, skill_id: skillCSS.skill_id });
     await CourseSkill.create({ course_id: frontendCourse.course_id, skill_id: skillReact.skill_id });
     await CourseUser.create({ course_id: frontendCourse.course_id, user_id: user1.user_id });
+    await CourseModule.create({ course_id: frontendCourse.course_id, module_id: module1.module_id });
+    await ModuleLecture.create({ module_id: module1.module_id, lecture_id: lecture1.lecture_id });
 
     await CourseSkill.create({ course_id: mobileFullstackCourse.course_id, skill_id: skillNode.skill_id });
     await CourseSkill.create({ course_id: mobileFullstackCourse.course_id, skill_id: skillAndroidStudio.skill_id });
     await CourseUser.create({ course_id: mobileFullstackCourse.course_id, user_id: user2.user_id });
-
-    await CourseSkill.create({ course_id: mobileFrontendCourse.course_id, skill_id: skillReact.skill_id });
-    await CourseSkill.create({ course_id: mobileFrontendCourse.course_id, skill_id: skillAndroidStudio.skill_id });
-    await CourseUser.create({ course_id: mobileFrontendCourse.course_id, user_id: user2.user_id });
-
-    const lecture1 = await Lecture.create({
-      title: 'Getting Started with HTML',
-      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
-      module_id: module1.module_id,
-      is_preview: true,
-    });
-
-    const lecture2 = await Lecture.create({
-      title: 'CSS Fundamentals',
-      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
-      module_id: module2.module_id,
-      is_preview: false,
-    });
-
-    const lecture3 = await Lecture.create({
-      title: 'Building Mobile Apps with React Native',
-      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
-      module_id: module3.module_id,
-      is_preview: false,
-    });
-
-    const lecture4 = await Lecture.create({
-      title: 'Advanced UI Design Principles',
-      video_url: 'https://youtu.be/Dyv8h-0-K2Y?si=kSVBShP-LGMjy2X8',
-      module_id: module4.module_id,
-      is_preview: true,
-    });
-
+    await CourseModule.create({ course_id: mobileFullstackCourse.course_id, module_id: module1.module_id });
     await ModuleLecture.create({ module_id: module1.module_id, lecture_id: lecture1.lecture_id });
-    await ModuleLecture.create({ module_id: module2.module_id, lecture_id: lecture2.lecture_id });
-    await ModuleLecture.create({ module_id: module3.module_id, lecture_id: lecture3.lecture_id });
-    await ModuleLecture.create({ module_id: module4.module_id, lecture_id: lecture4.lecture_id });
 
     console.log('Data successfully seeded!');
     process.exit();

@@ -7,27 +7,15 @@ require('./model/Skill');
 require('./model/CourseSkill');
 require('./model/Module');
 require('./model/CourseModule');
-const userController = require('./controller/userController');
-const categoryController = require('./controller/categoryController');
-const courseController = require('./controller/courseController');
-const moduleController = require('./controller/moduleController');
+require('./model/Lecture');
+require('./model/ModuleLecture');
+const apiRoutes = require('./routes');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use('/api', apiRoutes);
 
-app.post('/categories', categoryController.createCategory);
-app.put('/categories/:id', categoryController.updateCategory);
-app.post('/courses', courseController.createCourse);  
-app.put('/courses/:id', courseController.updateCourse);
-app.delete('/courses/:id', courseController.deleteCourse);
-app.get('/courses/:id', courseController.getCourseById);
-app.get('/users/:id', userController.getUserWithCoursesAndSkills);
-app.get('/categories', categoryController.getParentCategories);
-app.get('/categories/:id/subcategories', categoryController.getSubCategories);
-app.get('/categories/:id/courses', categoryController.getCoursesBySubCategory);
-app.get('/api/search', courseController.searchCoursesOrSkills);
-app.get('/modules/:id', moduleController.getModuleById);
 const startServer = async () => {
     try {
         await sequelize.sync({ logging: console.log });

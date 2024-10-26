@@ -22,7 +22,7 @@ const CourseModule = sequelize.define('CourseModule', {
   },
 });
 
-Course.hasMany(Module, { through: CourseModule, foreignKey: 'course_id', onDelete: 'CASCADE' });
+Course.belongsToMany(Module, { through: CourseModule, foreignKey: 'course_id', onDelete: 'CASCADE' });
 Module.belongsToMany(Course, { through: CourseModule, foreignKey: 'module_id' });
 
 module.exports = CourseModule;

@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const Module = require('../model/Module');
 const Lecture = require('../model/Lecture');
+const ModuleLecture = require('../model/ModuleLecture'); 
 
 const getModuleById = async (req, res) => {
     const moduleId = req.params.id;
@@ -11,7 +12,7 @@ const getModuleById = async (req, res) => {
             include: [
                 {
                     model: Lecture,
-                    through: { attributes: [] }, 
+                    through: ModuleLecture, 
                     attributes: ['lecture_id', 'title', 'video_url', 'is_preview'],
                 },
             ],
@@ -29,5 +30,5 @@ const getModuleById = async (req, res) => {
 };
 
 module.exports = {
-    getModuleById
+    getModuleById,
 };

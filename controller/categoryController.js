@@ -123,10 +123,38 @@ const getCoursesBySubCategory = async (req, res) => {
   }
 };
 
+const deleteCategory = async (req, res) => {
+  const categoryId = req.params.id;
+  try {
+    const category = await Category.findByPk(categoryId);
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+    
+    const associatedCoursesCount = await Course.count({
+      where: {
+        category_id: categoryId,
+      },
+    });
+    
+    if (associatedCoursesCount > 0) {
+      return res.status(400).json({ error: 'Cannot delete category with associated courses' });
+    }
+    
+    await category.destroy();
+    res.json({ message: 'Category deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting category:', err);
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+};
+
+
 module.exports = {
   getParentCategories,
   getSubCategories,
   getCoursesBySubCategory,
   createCategory,   
-  updateCategory,  
+  updateCategory, 
+  deleteCategory,  
 };
