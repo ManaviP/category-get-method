@@ -9,6 +9,6 @@ const ModuleRoutes = require('./ModuleRoutes');
 router.use('/categories', CategoryRoutes);
 router.use('/courses', CourseRoutes);
 router.use('/users', UserRoutes);
-router.use('/modules', ModuleRoutes);
+router.use('/courses', ModuleRoutes);
 
 module.exports = router;
