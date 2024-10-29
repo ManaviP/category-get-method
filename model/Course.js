@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
 const Category = require('./category'); 
 
@@ -14,6 +14,10 @@ const Course = sequelize.define('Course', {
   },
   course_description: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  course_longdes:{
+    type: DataTypes.TEXT('long'),
     allowNull: true,
   },
   course_price: {
@@ -35,6 +39,14 @@ const Course = sequelize.define('Course', {
   duration: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  course_promotion: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  course_img: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   category_id: {
     type: DataTypes.INTEGER,

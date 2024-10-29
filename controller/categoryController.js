@@ -103,16 +103,24 @@ const getCoursesBySubCategory = async (req, res) => {
           through: { attributes: [] },
           attributes: ['user_id', 'name'],
         },
+        {
+          model: Learn,
+          through: { attributes: [] },
+          attributes: ['WhatReq', 'WhoCanJoin','WhatYouLearn'],
+      },
       ],
       attributes: [
         'course_id',
         'course_name',
         'course_description',
+        'course_longdes',
         'course_price',
         'course_mrp', 
         'course_level',
         'review',
         'duration',
+        'course_img',
+        'course_promotion',
       ],
     });
 

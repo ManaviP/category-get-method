@@ -9,6 +9,7 @@ require('./model/Module');
 require('./model/CourseModule');
 require('./model/Lecture');
 require('./model/ModuleLecture');
+require('./model/Learn');
 const apiRoutes = require('./routes');
 const app = express();
 const PORT = process.env.PORT || 3001;

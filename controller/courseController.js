@@ -9,6 +9,7 @@ const CourseSkill = require('../model/CourseSkill');
 const CourseUser = require('../model/CourseUser');
 const CourseModule = require('../model/CourseModule');
 const ModuleLecture = require('../model/ModuleLecture');
+const { WhatYouLearn, WhatReq, WhoCanJoin, WhatYouLearnCourse, WhatReqCourse, WhoCanJoinCourse } = require('../model/Learn');
 
 const searchCoursesOrSkills = async (req, res) => {
     const query = req.query.query;
@@ -17,46 +18,32 @@ const searchCoursesOrSkills = async (req, res) => {
     }
     try {
         const coursesByName = await Course.findAll({
-            where: {
-                course_name: {
-                    [Op.like]: `%${query}%`,
-                },
-            },
+            where: { course_name: { [Op.like]: `%${query}%` } },
             include: [
-                {
-                    model: Skill,
-                    through: { attributes: [] },
-                    attributes: ['skill_id', 'skill_name'],
-                },
-                {
-                    model: User,
-                    through: { attributes: [] },
-                    attributes: ['user_id', 'name'],
-                },
+                { model: Skill, through: { attributes: [] }, attributes: ['skill_id', 'skill_name'] },
+                { model: User, through: { attributes: [] }, attributes: ['user_id', 'name'] },
+                { model: WhatReq, through: { attributes: [] }, attributes: ['content', 'WhatReq_id'] },
+                { model: WhatYouLearn, through: { attributes: [] }, attributes: ['content', 'WhatYouLearn_id'] },
+                { model: WhoCanJoin, through: { attributes: [] }, attributes: ['content', 'WhoCanJoin_id'] },
             ],
         });
         const skills = await Skill.findAll({
-            where: {
-                skill_name: {
-                    [Op.like]: `%${query}%`,
-                },
-            },
+            where: { skill_name: { [Op.like]: `%${query}%` } },
             include: [
                 {
                     model: Course,
                     through: { attributes: [] },
-                    attributes: ['course_id', 'course_name', 'course_description', 'course_price', 'course_mrp', 'course_level', 'review', 'duration'],
+                    attributes: [
+                        'course_id', 'course_name', 'course_description', 'course_price', 
+                        'course_mrp', 'course_level', 'review', 'duration', 'course_longdes', 
+                        'course_img', 'course_promotion'
+                    ],
                     include: [
-                        {
-                            model: Skill,
-                            through: { attributes: [] },
-                            attributes: ['skill_id', 'skill_name'],
-                        },
-                        {
-                            model: User,
-                            through: { attributes: [] },
-                            attributes: ['user_id', 'name'],
-                        },
+                        { model: Skill, through: { attributes: [] }, attributes: ['skill_id', 'skill_name'] },
+                        { model: User, through: { attributes: [] }, attributes: ['user_id', 'name'] },
+                        { model: WhatReq, through: { attributes: [] }, attributes: ['content', 'WhatReq_id'] },
+                        { model: WhatYouLearn, through: { attributes: [] }, attributes: ['content', 'WhatYouLearn_id'] },
+                        { model: WhoCanJoin, through: { attributes: [] }, attributes: ['content', 'WhoCanJoin_id'] },
                     ],
                 },
             ],
@@ -65,10 +52,7 @@ const searchCoursesOrSkills = async (req, res) => {
         const allCourses = [...new Set([...coursesByName, ...coursesBySkill])];
         const searchCount = allCourses.length;
         if (searchCount === 0) {
-            return res.status(200).json({
-                message: 'No courses found',
-                searchCount: 0,
-            });
+            return res.status(200).json({ message: 'No courses found', searchCount: 0 });
         }
         return res.status(200).json({ searchCount, courses: allCourses });
     } catch (error) {
@@ -79,7 +63,7 @@ const searchCoursesOrSkills = async (req, res) => {
 
 const updateCourse = async (req, res) => {
     const courseId = req.params.id;
-    const { course_name, course_description, course_mrp, course_price, course_level, duration, skills, modules } = req.body;
+    const { course_name, course_description, course_mrp, course_price, course_level, duration, skills, whatYouLearn, whoCanJoin, whatReq, modules, course_img, course_promotion, course_longdes } = req.body;
     try {
         const course = await Course.findByPk(courseId);
         if (!course) {
@@ -91,6 +75,9 @@ const updateCourse = async (req, res) => {
         course.course_price = course_price || course.course_price;
         course.course_level = course_level || course.course_level;
         course.duration = duration || course.duration;
+        course.course_img = course_img || course.course_img;
+        course.course_promotion = course_promotion || course.course_promotion;
+        course.course_longdes = course_longdes || course.course_longdes;
         await course.save();
         if (skills && skills.length > 0) {
             await CourseSkill.destroy({ where: { course_id: courseId } });
@@ -101,6 +88,21 @@ const updateCourse = async (req, res) => {
             await CourseModule.destroy({ where: { course_id: courseId } });
             const moduleRecords = modules.map(module => ({ module_name: module.name, course_id: courseId }));
             await CourseModule.bulkCreate(moduleRecords);
+        }
+        if (whatYouLearn && whatYouLearn.length > 0) {
+            await WhatYouLearnCourse.destroy({ where: { course_id: courseId } });
+            const whatYouLearnRecords = whatYouLearn.map(item => ({ content: item.content, course_id: courseId }));
+            await WhatYouLearn.bulkCreate(whatYouLearnRecords);
+        }
+        if (whoCanJoin && whoCanJoin.length > 0) {
+            await WhoCanJoinCourse.destroy({ where: { course_id: courseId } });
+            const whoCanJoinRecords = whoCanJoin.map(item => ({ content: item.content, course_id: courseId }));
+            await WhoCanJoin.bulkCreate(whoCanJoinRecords);
+        }
+        if (whatReq && whatReq.length > 0) {
+            await WhatReqCourse.destroy({ where: { course_id: courseId } });
+            const whatReqRecords = whatReq.map(item => ({ content: item.content, course_id: courseId }));
+            await WhatReq.bulkCreate(whatReqRecords);
         }
         res.json(course);
     } catch (err) {
@@ -118,6 +120,8 @@ const deleteCourse = async (req, res) => {
         }
         await CourseSkill.destroy({ where: { course_id: courseId } });
         await CourseModule.destroy({ where: { course_id: courseId } });
+        await WhoCanJoinCourse.destroy({ where: { course_id: courseId } });
+        await WhatReqCourse.destroy({ where: { course_id: courseId } });
         await course.destroy();
         res.json({ message: 'Course deleted successfully' });
     } catch (err) {
@@ -132,41 +136,17 @@ const getCourseById = async (req, res) => {
         const course = await Course.findOne({
             where: { course_id: courseId },
             include: [
-                {
-                    model: Category,
-                    as: 'Category',
-                    attributes: ['category_id', 'category_name'],
-                },
-                {
-                    model: Skill,
-                    through: { attributes: [] },
-                    attributes: ['skill_id', 'skill_name'],
-                },
-                {
-                    model: User,
-                    through: { attributes: [] },
-                    attributes: ['user_id', 'name'],
-                },
-                {
-                    model: Module,
-                    attributes: ['module_id', 'module_name'],
-                    include: [
-                        {
-                            model: Lecture,
-                            attributes: ['lecture_id', 'title', 'video_url', 'is_preview'],
-                        },
-                    ],
-                }
+                { model: Category, as: 'Category', attributes: ['category_id', 'category_name'] },
+                { model: Skill, through: { attributes: [] }, attributes: ['skill_id', 'skill_name'] },
+                { model: User, through: { attributes: [] }, attributes: ['user_id', 'name'] },
+                { model: Module, attributes: ['module_id', 'module_name'], include: [{ model: Lecture, attributes: ['lecture_id', 'title', 'video_url', 'is_preview'] }] },
+                { model: WhatReq, through: { attributes: [] }, attributes: ['content', 'WhatReq_id'] },
+                { model: WhatYouLearn, through: { attributes: [] }, attributes: ['content', 'WhatYouLearn_id'] },
+                { model: WhoCanJoin, through: { attributes: [] }, attributes: ['content', 'WhoCanJoin_id'] },
             ],
             attributes: [
-                'course_id',
-                'course_name',
-                'course_description',
-                'course_price',
-                'course_mrp',
-                'course_level',
-                'review',
-                'duration',
+                'course_id', 'course_name', 'course_description', 'course_price', 'course_mrp', 
+                'course_level', 'review', 'duration', 'course_img', 'course_promotion', 'course_longdes'
             ],
         });
         if (!course) {
@@ -180,61 +160,46 @@ const getCourseById = async (req, res) => {
 };
 
 const createCourse = async (req, res) => {
-    const {
-        course_name,
-        course_description,
-        course_mrp,
-        course_price,
-        course_level,
-        duration,
-        review,
-        category_id,
-        skills,
-        user_id,
-        modules
-    } = req.body;
+    const { course_name, course_description, course_mrp, course_price, course_level, duration, review, category_id, skills, learn, user_id, modules, course_img, course_promotion, course_longdes } = req.body;
     try {
-        const newCourse = await Course.create({
-            course_name,
-            course_description,
-            course_mrp,
-            course_price,
-            course_level,
-            duration,
-            review,
-            category_id
-        });
+        const newCourse = await Course.create({ course_name, course_description, course_mrp, course_price, course_level, duration, review, category_id, course_img, course_promotion, course_longdes });
         if (skills && skills.length > 0) {
-            const skillRecords = skills.map(skill_id => ({
-                course_id: newCourse.course_id,
-                skill_id,
-            }));
+            const skillRecords = skills.map(skill_id => ({ course_id: newCourse.course_id, skill_id }));
             await CourseSkill.bulkCreate(skillRecords);
         }
         if (user_id) {
-            await CourseUser.create({
-                course_id: newCourse.course_id,
-                user_id,
-            });
+            await CourseUser.create({ course_id: newCourse.course_id, user_id });
         }
         if (modules && modules.length > 0) {
-            const moduleRecords = modules.map(module => ({
-                module_name: module.name,
-                course_id: newCourse.course_id
-            }));
+            const moduleRecords = modules.map(module => ({ course_id: newCourse.course_id, module_name: module.module_name }));
             await CourseModule.bulkCreate(moduleRecords);
         }
-        res.status(201).json(newCourse);
+        if (whatYouLearn && whatYouLearn.length > 0) {
+            await WhatYouLearnCourse.destroy({ where: { course_id: courseId } });
+            const whatYouLearnRecords = whatYouLearn.map(item => ({ content: item.content, course_id: courseId }));
+            await WhatYouLearn.bulkCreate(whatYouLearnRecords);
+        }
+        if (whoCanJoin && whoCanJoin.length > 0) {
+            await WhoCanJoinCourse.destroy({ where: { course_id: courseId } });
+            const whoCanJoinRecords = whoCanJoin.map(item => ({ content: item.content, course_id: courseId }));
+            await WhoCanJoin.bulkCreate(whoCanJoinRecords);
+        }
+        if (whatReq && whatReq.length > 0) {
+            await WhatReqCourse.destroy({ where: { course_id: courseId } });
+            const whatReqRecords = whatReq.map(item => ({ content: item.content, course_id: courseId }));
+            await WhatReq.bulkCreate(whatReqRecords);
+        }
+        res.json(newCourse);
     } catch (err) {
         console.error('Error creating course:', err);
-        res.status(500).json({ error: 'Failed to create course', details: err.message });
+        res.status(500).json({ error: 'Failed to create course' });
     }
 };
 
 module.exports = {
     searchCoursesOrSkills,
-    getCourseById,
-    createCourse,
     updateCourse,
     deleteCourse,
+    getCourseById,
+    createCourse,
 };

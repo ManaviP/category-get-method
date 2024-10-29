@@ -34,6 +34,9 @@ async function seeder() {
     const fullstackCourse = await Course.create({
       course_name: 'Full-Stack Web Development',
       course_description: 'Learn how to build web applications from scratch',
+      course_longdes:'<p>Welcome to the <b>Introduction to Web Development</b> course! In this course, you will learn the basics of HTML, CSS, and JavaScript.</p>',
+      course_img: 'http://example.com/intro-to-js',
+      course_promotion: 'http://example.com/intro-to-js',
       course_price: 15000,
       course_mrp: 20000,
       course_level: 'beginner',
@@ -45,6 +48,9 @@ async function seeder() {
     const frontendCourse = await Course.create({
       course_name: 'Frontend Development',
       course_description: 'Learn how to build user interfaces using modern technologies',
+      course_longdes:'<p>Welcome to the <b>Introduction to Web Development</b> course! In this course, you will learn the basics of HTML, CSS, and JavaScript.</p>',
+      course_img: 'http://example.com/intro-to-js',
+      course_promotion: 'http://example.com/intro-to-js',
       course_price: 15000,
       course_mrp: 20000,
       course_level: 'beginner',
@@ -56,6 +62,9 @@ async function seeder() {
     const mobileFullstackCourse = await Course.create({
       course_name: 'Mobile Full-Stack Development',
       course_description: 'Build mobile applications using full-stack technologies',
+      course_longdes:'<p>Welcome to the <b>Introduction to Web Development</b> course! In this course, you will learn the basics of HTML, CSS, and JavaScript.</p>',
+      course_img: 'http://example.com/intro-to-js',
+      course_promotion: 'http://example.com/intro-to-js',
       course_price: 15000,
       course_mrp: 20000,
       course_level: 'beginner',
