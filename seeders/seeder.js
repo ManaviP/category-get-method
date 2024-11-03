@@ -41,6 +41,7 @@ async function seeder() {
       course_mrp: 20000,
       course_level: 'beginner',
       review: 4,
+      publish: 'false',
       duration: 100,
       category_id: webDevelopment.category_id,
     });
@@ -54,6 +55,7 @@ async function seeder() {
       course_price: 15000,
       course_mrp: 20000,
       course_level: 'beginner',
+      publish: 'false',
       review: 4,
       duration: 100,
       category_id: webDevelopment.category_id,
@@ -67,6 +69,7 @@ async function seeder() {
       course_promotion: 'http://example.com/intro-to-js',
       course_price: 15000,
       course_mrp: 20000,
+      publish: 'false',
       course_level: 'beginner',
       review: 4,
       duration: 100,

@@ -10,7 +10,7 @@ const ModuleLecture = sequelize.define('ModuleLecture', {
             model: Lecture,
             key: 'lecture_id',
         },
-        allowNull: false,
+        allowNull: true,
     },
     module_id: {
         type: DataTypes.INTEGER,
@@ -18,7 +18,7 @@ const ModuleLecture = sequelize.define('ModuleLecture', {
             model: Module,
             key: 'module_id',
         },
-        allowNull: false,
+        allowNull: true,
     },
 });
 

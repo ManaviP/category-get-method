@@ -10,7 +10,7 @@ const WhatYouLearn = sequelize.define('WhatYouLearn', {
   },
   content: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhatYouLearns' });
 
@@ -22,7 +22,7 @@ const WhatReq = sequelize.define('WhatReq', {
   },
   content: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhatReqs' });
 
@@ -34,7 +34,7 @@ const WhoCanJoin = sequelize.define('WhoCanJoin', {
   },
   content: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhoCanJoins' });
 
@@ -45,7 +45,7 @@ const WhatYouLearnCourse = sequelize.define('WhatYouLearnCourse', {
       model: Course,
       key: 'course_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
   WhatYouLearn_id: {
     type: DataTypes.INTEGER,
@@ -53,7 +53,7 @@ const WhatYouLearnCourse = sequelize.define('WhatYouLearnCourse', {
       model: WhatYouLearn,
       key: 'WhatYouLearn_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhatYouLearnCourses' });
 
@@ -64,7 +64,7 @@ const WhatReqCourse = sequelize.define('WhatReqCourse', {
       model: Course,
       key: 'course_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
   WhatReq_id: {
     type: DataTypes.INTEGER,
@@ -72,7 +72,7 @@ const WhatReqCourse = sequelize.define('WhatReqCourse', {
       model: WhatReq,
       key: 'WhatReq_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhatReqCourses' });
 
@@ -91,7 +91,7 @@ const WhoCanJoinCourse = sequelize.define('WhoCanJoinCourse', {
       model: WhoCanJoin,
       key: 'WhoCanJoin_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
 }, { tableName: 'WhoCanJoinCourses' });
 

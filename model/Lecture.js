@@ -9,19 +9,19 @@ const Lecture = sequelize.define('Lecture', {
   },
   title: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   video_url: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   module_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   is_preview: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: false,
   },
 });

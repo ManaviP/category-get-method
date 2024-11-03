@@ -10,7 +10,7 @@ const CourseUser = sequelize.define('CourseUser', {
       model: User,
       key: 'user_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
   course_id: {
     type: DataTypes.INTEGER,
@@ -18,7 +18,7 @@ const CourseUser = sequelize.define('CourseUser', {
       model: Course,
       key: 'course_id',
     },
-    allowNull: false,
+    allowNull: true,
   },
 });
 

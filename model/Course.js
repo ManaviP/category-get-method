@@ -42,11 +42,15 @@ const Course = sequelize.define('Course', {
   },
   course_promotion: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   course_img: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+  },
+  publish:{
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
   },
   category_id: {
     type: DataTypes.INTEGER,

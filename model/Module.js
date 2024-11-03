@@ -9,11 +9,11 @@ const Module = sequelize.define('Module', {
   },
   module_name: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   course_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 });
 

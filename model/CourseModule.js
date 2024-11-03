@@ -18,7 +18,7 @@ const CourseModule = sequelize.define('CourseModule', {
       model: Module, 
       key: 'module_id', 
     },
-    allowNull: false,
+    allowNull: true,
   },
 });
 

@@ -9,11 +9,11 @@ const Skill = sequelize.define('Skill', {
   },
   skill_name: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   skill_value: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     validate: {
       min: 1,
       max: 5,
