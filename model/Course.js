@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
 const Category = require('./category'); 
+const User = require('./User');
 
 const Course = sequelize.define('Course', {
   course_id: {
@@ -60,7 +61,15 @@ const Course = sequelize.define('Course', {
     },
     onDelete: 'CASCADE',
   },
+  createdby: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'user_id',
+        },
+        onDelete: 'CASCADE' ,
+  },
 });
 Course.belongsTo(Category, {foreignKey: 'category_id',onDelete: 'CASCADE', });
-
+Course.belongsTo(User, {foreignKey: 'createdby',onDelete: 'CASCADE', });
 module.exports = Course;
